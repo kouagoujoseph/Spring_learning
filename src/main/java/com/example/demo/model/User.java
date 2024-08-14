@@ -1,15 +1,24 @@
 package com.example.demo.model;
 
+import java.util.Collection;
+import java.util.Collections;
+
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "users")
-public class User {
+public class User implements UserDetails{
 
      @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -21,9 +30,19 @@ public class User {
     private String password;
 
     private String email;
+     @OneToOne(cascade =CascadeType.ALL)
+    private  Role role;
 
 
     
+    public Role getRole() {
+        return role;
+    }
+
+    public void setRole(Role role) {
+        this.role = role;
+    }
+
     public String getEmail() {
         return email;
     }
@@ -55,6 +74,13 @@ public class User {
     public void setPassword(String password) {
         this.password = password;
     }
+    
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return Collections.singletonList(new SimpleGrantedAuthority("ROLE_" + this.role.getLibelle()));
+    }
+
+ 
 
     
 
